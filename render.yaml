@@ -1,0 +1,24 @@
+services:
+  # Backend Service
+  - type: web
+    name: ticket-backend
+    env: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port 10000
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: FRONTEND_URL
+        fromService:
+          type: static
+          name: ticket-frontend
+          property: url
+
+  # Frontend Service
+  - type: static
+    name: ticket-frontend
+    rootDir: frontend
+    staticPublishPath: .
+    plan: free
