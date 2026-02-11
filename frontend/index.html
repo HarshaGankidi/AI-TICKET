@@ -16,21 +16,21 @@
                 extend: {
                     colors: {
                         brand: {
-                            50: '#f0f7ff',
-                            100: '#e0effe',
-                            200: '#bae0fd',
-                            300: '#7cc8fb',
-                            400: '#38acf7',
-                            500: '#0e91e9',
-                            600: '#0274c7',
-                            700: '#035ca1',
-                            800: '#074e85',
-                            900: '#0c426e',
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                            800: '#9f1239',
+                            900: '#881337',
                         },
                         dark: {
-                            DEFAULT: '#0f172a',
-                            lighter: '#1e293b',
-                            card: '#1e293b',
+                            DEFAULT: '#0a0a0a',
+                            lighter: '#171717',
+                            card: '#1c1c1c',
                         }
                     },
                     fontFamily: {
@@ -43,10 +43,10 @@
     <link rel="stylesheet" href="css/style.css">
     <style>
         .auth-screen {
-            background: radial-gradient(circle at top right, #1e293b, #0f172a);
+            background: radial-gradient(circle at top right, #171717, #0a0a0a);
         }
         .nav-item.active {
-            background-color: #1e293b;
+            background-color: #171717;
             color: white;
         }
         [id$="-section"] {
@@ -126,23 +126,23 @@
             
             <nav class="flex-1 px-4 space-y-1 py-4">
                 <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 mb-2">Workspace</div>
-                <a href="#" onclick="switchTab('dashboard')" class="nav-item group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all" id="nav-dashboard">
+                <a href="#" onclick="switchTab('dashboard')" class="nav-item group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-neutral-800 transition-all" id="nav-dashboard">
                     <i class="fas fa-chart-line mr-3 text-lg transition-colors group-hover:text-brand-400"></i>
                     Dashboard
                 </a>
-                <a href="#" onclick="switchTab('create')" class="nav-item group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all" id="nav-create">
+                <a href="#" onclick="switchTab('create')" class="nav-item group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-neutral-800 transition-all" id="nav-create">
                     <i class="fas fa-plus-circle mr-3 text-lg transition-colors group-hover:text-brand-400"></i>
                     New Ticket
                 </a>
-                <a href="#" onclick="switchTab('history')" class="nav-item group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all" id="nav-history">
+                <a href="#" onclick="switchTab('history')" class="nav-item group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-neutral-800 transition-all" id="nav-history">
                     <i class="fas fa-list-check mr-3 text-lg transition-colors group-hover:text-brand-400"></i>
                     My Tickets
                 </a>
-                <a href="#" onclick="switchTab('settings')" class="nav-item group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all" id="nav-settings">
+                <a href="#" onclick="switchTab('settings')" class="nav-item group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-neutral-800 transition-all" id="nav-settings">
                     <i class="fas fa-user-gear mr-3 text-lg transition-colors group-hover:text-brand-400"></i>
                     Account
                 </a>
-                <a href="#" onclick="switchTab('about')" class="nav-item group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all" id="nav-about">
+                <a href="#" onclick="switchTab('about')" class="nav-item group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-neutral-800 transition-all" id="nav-about">
                     <i class="fas fa-circle-info mr-3 text-lg transition-colors group-hover:text-brand-400"></i>
                     Documentation
                 </a>

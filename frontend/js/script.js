@@ -160,13 +160,13 @@ async function checkSystemStatus() {
 function switchTab(tab) {
     // Update nav links
     document.querySelectorAll('.nav-item').forEach(el => {
-        el.classList.remove('active', 'bg-slate-800', 'text-white');
+        el.classList.remove('active', 'bg-neutral-800', 'text-white');
         el.classList.add('text-slate-400');
     });
     
     const activeNav = document.getElementById(`nav-${tab}`);
     if (activeNav) {
-        activeNav.classList.add('active', 'bg-slate-800', 'text-white');
+        activeNav.classList.add('active', 'bg-neutral-800', 'text-white');
         activeNav.classList.remove('text-slate-400');
     }
 
