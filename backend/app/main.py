@@ -18,17 +18,9 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Ticket AI API", description="API for AI-Powered Ticket Creation")
 
 # Enable CORS
-frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5500")
-origins = [
-    frontend_url,
-    "http://127.0.0.1:5500",
-    "http://localhost:5500",
-    "null" # For local file access
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],  # Allows all origins
     allow_credentials=True,
     allow_methods=["*"],  # Allows all methods
     allow_headers=["*"],  # Allows all headers

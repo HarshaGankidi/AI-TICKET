@@ -1,7 +1,4 @@
-const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:8000'
-    : 'https://YOUR-BACKEND-URL.onrender.com'; // TODO: Replace with your actual Render Backend URL after deployment
-
+const API_URL = 'http://localhost:8000';
 let currentAnalysis = null;
 
 // On Load
