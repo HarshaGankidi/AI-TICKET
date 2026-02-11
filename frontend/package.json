@@ -1,0 +1,22 @@
+{
+  "name": "support-hub-frontend",
+  "version": "1.0.0",
+  "description": "Enterprise Support Platform Frontend",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve .",
+    "start": "npx serve .",
+    "build": "echo 'Building for production...' && if not exist dist mkdir dist && xcopy /y /s /e . dist\\ /exclude:package.json && echo 'Build complete: files are in dist/'",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "support",
+    "ticket",
+    "frontend"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serve": "^14.2.0"
+  }
+}
