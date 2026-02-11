@@ -9,3 +9,6 @@ numpy
 python-multipart
 joblib
 requests
+python-jose[cryptography]
+passlib[bcrypt]
+pydantic[email]

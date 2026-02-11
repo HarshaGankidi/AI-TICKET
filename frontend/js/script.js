@@ -1,13 +1,141 @@
 const API_URL = 'http://localhost:8000';
 let currentAnalysis = null;
 let allTickets = [];
+let currentUser = null;
 
 // On Load
 document.addEventListener('DOMContentLoaded', () => {
+    checkAuth();
     checkSystemStatus();
     // Default to dashboard
     switchTab('dashboard');
 });
+
+// Auth Logic
+function toggleAuth(type) {
+    const loginCont = document.getElementById('login-container');
+    const signupCont = document.getElementById('signup-container');
+    
+    if (type === 'signup') {
+        loginCont.classList.add('hidden');
+        signupCont.classList.remove('hidden');
+    } else {
+        signupCont.classList.add('hidden');
+        loginCont.classList.remove('hidden');
+    }
+}
+
+async function checkAuth() {
+    const token = localStorage.getItem('token');
+    const authScreen = document.getElementById('auth-screen');
+    const mainApp = document.getElementById('main-app');
+
+    if (!token) {
+        authScreen.classList.remove('hidden');
+        mainApp.classList.add('opacity-0');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/users/me`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+            currentUser = await response.json();
+            updateUIWithUser();
+            authScreen.classList.add('hidden');
+            mainApp.classList.remove('opacity-0');
+            fetchTickets();
+            updateDashboardStats();
+        } else {
+            localStorage.removeItem('token');
+            authScreen.classList.remove('hidden');
+            mainApp.classList.add('opacity-0');
+        }
+    } catch (error) {
+        console.error('Auth check failed:', error);
+    }
+}
+
+async function handleLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    const btn = document.getElementById('login-btn');
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+
+    try {
+        const formData = new FormData();
+        formData.append('username', email);
+        formData.append('password', password);
+
+        const response = await fetch(`${API_URL}/token`, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) throw new Error('Invalid credentials');
+
+        const data = await response.json();
+        localStorage.setItem('token', data.access_token);
+        await checkAuth();
+        showNotification("Welcome Back!", "Successfully signed into your workspace.");
+    } catch (error) {
+        showNotification("Login Failed", error.message, "error");
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Access Workspace';
+    }
+}
+
+async function handleSignup(e) {
+    e.preventDefault();
+    const name = document.getElementById('signup-name').value;
+    const email = document.getElementById('signup-email').value;
+    const password = document.getElementById('signup-password').value;
+    const btn = document.getElementById('signup-btn');
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+
+    try {
+        const response = await fetch(`${API_URL}/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password, full_name: name })
+        });
+
+        if (!response.ok) {
+            const data = await response.json();
+            throw new Error(data.detail || 'Registration failed');
+        }
+
+        showNotification("Account Created", "Please sign in with your new credentials.");
+        toggleAuth('login');
+    } catch (error) {
+        showNotification("Signup Failed", error.message, "error");
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Register Account';
+    }
+}
+
+function handleLogout() {
+    localStorage.removeItem('token');
+    currentUser = null;
+    location.reload();
+}
+
+function updateUIWithUser() {
+    if (!currentUser) return;
+    
+    document.getElementById('user-display-name').textContent = currentUser.full_name;
+    const initials = currentUser.full_name.split(' ').map(n => n[0]).join('').toUpperCase();
+    document.getElementById('user-initials').textContent = initials;
+}
 
 // System Status Check
 async function checkSystemStatus() {
@@ -54,11 +182,11 @@ function switchTab(tab) {
 
     // Update Header
     const titles = {
-        dashboard: { t: "Dashboard Overview", s: "Welcome back to your AI-powered workspace." },
-        create: { t: "Create New Ticket", s: "Submit a request for AI-assisted categorization." },
-        history: { t: "Ticket History", s: "Review and track your previous submissions." },
-        settings: { t: "System Settings", s: "Configure your personal and platform preferences." },
-        about: { t: "About AITicket", s: "Learn how our platform revolutionizes support." }
+        dashboard: { t: "Workspace Overview", s: "Monitor your ticket performance and platform health." },
+        create: { t: "New Support Request", s: "Submit a new ticket for processing and resolution." },
+        history: { t: "Request History", s: "View and manage your previous support requests." },
+        settings: { t: "Profile Settings", s: "Manage your account and notification preferences." },
+        about: { t: "Support Platform", s: "Enterprise-grade ticket management infrastructure." }
     };
 
     document.getElementById('page-title').textContent = titles[tab].t;
@@ -110,7 +238,10 @@ async function analyzeTicket() {
     try {
         const response = await fetch(`${API_URL}/predict`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
             body: JSON.stringify({ text: text })
         });
 
@@ -120,11 +251,11 @@ async function analyzeTicket() {
         currentAnalysis = { ...data, title: `Ticket: ${text.substring(0, 30)}...`, description: text };
         
         displayResult(data);
-        showNotification("AI Analysis Complete", "We've categorized and prioritized your request.");
+        showNotification("Analysis Complete", "Request has been processed and categorized.");
     } catch (error) {
-        showNotification("Analysis Failed", error.message, "error");
+        showNotification("Processing Error", error.message, "error");
     } finally {
-        btn.innerHTML = '<i class="fas fa-sparkles"></i> Run AI Analysis';
+        btn.innerHTML = '<i class="fas fa-microchip"></i> Process Request';
         btn.disabled = false;
     }
 }
@@ -171,7 +302,10 @@ async function submitTicket() {
     try {
         const response = await fetch(`${API_URL}/tickets`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
             body: JSON.stringify({
                 title: currentAnalysis.title,
                 description: currentAnalysis.description,
@@ -203,11 +337,21 @@ async function fetchTickets() {
     const list = document.getElementById('tickets-list');
     
     try {
-        const response = await fetch(`${API_URL}/tickets`);
+        const response = await fetch(`${API_URL}/tickets`, {
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
         allTickets = await response.json();
         renderTickets(allTickets);
+        updateDashboardStats();
     } catch (error) {
         showNotification("Failed to Load", "Could not retrieve ticket history.", "error");
+    }
+}
+
+function updateDashboardStats() {
+    const totalEl = document.getElementById('stat-total');
+    if (totalEl) {
+        totalEl.textContent = allTickets.length;
     }
 }
 
