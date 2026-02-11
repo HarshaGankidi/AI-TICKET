@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Support Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-robot"></i>
+                <span>SupportAI</span>
+            </div>
+            <nav>
+                <ul>
+                    <li class="active" onclick="switchTab('create')">
+                        <i class="fas fa-plus-circle"></i> New Ticket
+                    </li>
+                    <li onclick="switchTab('history')">
+                        <i class="fas fa-history"></i> Recent Tickets
+                    </li>
+                </ul>
+            </nav>
+            <div class="status-box">
+                <span id="system-status" class="status-indicator offline"></span>
+                <span id="status-text">Checking System...</span>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Create Ticket Section -->
+            <section id="create-section" class="active-section">
+                <header>
+                    <h1>Create New Ticket</h1>
+                    <p>Describe your issue and let our AI categorize it for you.</p>
+                </header>
+
+                <div class="ticket-composer">
+                    <div class="form-group">
+                        <label for="ticket-input">Issue Description</label>
+                        <textarea id="ticket-input" placeholder="e.g., I cannot access the VPN from my home network and I get error 503..."></textarea>
+                    </div>
+                    <button id="analyze-btn" onclick="analyzeTicket()">
+                        <i class="fas fa-magic"></i> Analyze Issue
+                    </button>
+                </div>
+
+                <!-- Analysis Result (Hidden by default) -->
+                <div id="analysis-result" class="analysis-card hidden">
+                    <div class="result-header">
+                        <h3><i class="fas fa-check-circle"></i> AI Analysis Complete</h3>
+                    </div>
+                    
+                    <div class="result-grid">
+                        <div class="result-item">
+                            <label>Category</label>
+                            <span id="result-category" class="badge category-badge">Loading...</span>
+                        </div>
+                        <div class="result-item">
+                            <label>Priority</label>
+                            <span id="result-priority" class="badge">Loading...</span>
+                        </div>
+                    </div>
+
+                    <div id="entities-container" class="entities-section hidden">
+                        <label>Extracted Information</label>
+                        <div id="entities-list" class="tags-container"></div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn-secondary" onclick="resetForm()">Discard</button>
+                        <button class="btn-primary" onclick="submitTicket()">
+                            <i class="fas fa-paper-plane"></i> Submit Ticket
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- History Section -->
+            <section id="history-section" class="hidden-section">
+                <header>
+                    <h1>Recent Tickets</h1>
+                    <button class="refresh-btn" onclick="fetchTickets()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </header>
+                <div id="tickets-list" class="tickets-grid">
+                    <!-- Tickets will be injected here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

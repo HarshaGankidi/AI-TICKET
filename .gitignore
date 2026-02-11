@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+env/
+.env
+.venv/
+
+# Environment Variables
+.env
+backend/.env
+frontend/.env
+*.env
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Project specific
+backend/app/ml/models/*.pkl
+data/dataset/
+data/processed/
