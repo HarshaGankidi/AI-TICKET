@@ -3,97 +3,571 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Support Portal</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>AITicket | Advanced AI Support Platform</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Tailwind CSS for rapid professional styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            200: '#bae0fd',
+                            300: '#7cc8fb',
+                            400: '#38acf7',
+                            500: '#0e91e9',
+                            600: '#0274c7',
+                            700: '#035ca1',
+                            800: '#074e85',
+                            900: '#0c426e',
+                        },
+                        dark: {
+                            DEFAULT: '#0f172a',
+                            lighter: '#1e293b',
+                            card: '#1e293b',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-    <div class="container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="logo">
-                <i class="fas fa-robot"></i>
-                <span>SupportAI</span>
+<body class="bg-dark text-slate-200 font-sans antialiased">
+    <!-- Sidebar / Navigation -->
+    <div class="flex min-h-screen">
+        <aside class="w-64 bg-dark-lighter border-r border-slate-800 flex flex-col fixed h-full transition-all duration-300 z-50 overflow-hidden" id="sidebar">
+            <div class="p-6 flex items-center gap-3">
+                <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/20">
+                    <i class="fas fa-robot text-white text-xl"></i>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-white whitespace-nowrap">AITicket</span>
             </div>
-            <nav>
-                <ul>
-                    <li class="active" onclick="switchTab('create')">
-                        <i class="fas fa-plus-circle"></i> New Ticket
-                    </li>
-                    <li onclick="switchTab('history')">
-                        <i class="fas fa-history"></i> Recent Tickets
-                    </li>
-                </ul>
+            
+            <nav class="flex-1 px-4 space-y-1 py-4">
+                <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 mb-2">Main Menu</div>
+                <a href="#" onclick="switchTab('dashboard')" class="nav-item group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all active" id="nav-dashboard">
+                    <i class="fas fa-chart-line mr-3 text-lg transition-colors group-hover:text-brand-400"></i>
+                    Dashboard
+                </a>
+                <a href="#" onclick="switchTab('create')" class="nav-item group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all" id="nav-create">
+                    <i class="fas fa-plus-circle mr-3 text-lg transition-colors group-hover:text-brand-400"></i>
+                    Create Ticket
+                </a>
+                <a href="#" onclick="switchTab('history')" class="nav-item group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all" id="nav-history">
+                    <i class="fas fa-clock-rotate-left mr-3 text-lg transition-colors group-hover:text-brand-400"></i>
+                    History
+                </a>
+                <a href="#" onclick="switchTab('settings')" class="nav-item group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all" id="nav-settings">
+                    <i class="fas fa-cog mr-3 text-lg transition-colors group-hover:text-brand-400"></i>
+                    Settings
+                </a>
+                <a href="#" onclick="switchTab('about')" class="nav-item group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all" id="nav-about">
+                    <i class="fas fa-info-circle mr-3 text-lg transition-colors group-hover:text-brand-400"></i>
+                    About
+                </a>
+
+                <div class="pt-6 text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 mb-2">Resources</div>
+                <a href="#" class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all">
+                    <i class="fas fa-book mr-3 text-lg transition-colors group-hover:text-brand-400"></i>
+                    Documentation
+                </a>
+                <a href="#" class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all">
+                    <i class="fas fa-users mr-3 text-lg transition-colors group-hover:text-brand-400"></i>
+                    Community
+                </a>
+                <a href="#" class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all">
+                    <i class="fas fa-shield-halved mr-3 text-lg transition-colors group-hover:text-brand-400"></i>
+                    Security
+                </a>
             </nav>
-            <div class="status-box">
-                <span id="system-status" class="status-indicator offline"></span>
-                <span id="status-text">Checking System...</span>
+
+            <div class="p-4 border-t border-slate-800">
+                <div class="bg-slate-800/50 rounded-xl p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-medium text-slate-400">System Status</span>
+                        <span id="system-status" class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                    </div>
+                    <p id="status-text" class="text-xs text-slate-300 font-medium">Connecting...</p>
+                </div>
             </div>
         </aside>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Create Ticket Section -->
-            <section id="create-section" class="active-section">
-                <header>
-                    <h1>Create New Ticket</h1>
-                    <p>Describe your issue and let our AI categorize it for you.</p>
-                </header>
-
-                <div class="ticket-composer">
-                    <div class="form-group">
-                        <label for="ticket-input">Issue Description</label>
-                        <textarea id="ticket-input" placeholder="e.g., I cannot access the VPN from my home network and I get error 503..."></textarea>
-                    </div>
-                    <button id="analyze-btn" onclick="analyzeTicket()">
-                        <i class="fas fa-magic"></i> Analyze Issue
-                    </button>
+        <!-- Main Content Wrapper -->
+        <main class="flex-1 ml-64 p-8 transition-all duration-300" id="main-wrapper">
+            <!-- Top Navbar -->
+            <header class="flex items-center justify-between mb-8">
+                <div>
+                    <h1 id="page-title" class="text-3xl font-bold text-white tracking-tight">Dashboard Overview</h1>
+                    <p id="page-subtitle" class="text-slate-400 mt-1">Welcome back to your AI-powered workspace.</p>
                 </div>
-
-                <!-- Analysis Result (Hidden by default) -->
-                <div id="analysis-result" class="analysis-card hidden">
-                    <div class="result-header">
-                        <h3><i class="fas fa-check-circle"></i> AI Analysis Complete</h3>
-                    </div>
-                    
-                    <div class="result-grid">
-                        <div class="result-item">
-                            <label>Category</label>
-                            <span id="result-category" class="badge category-badge">Loading...</span>
-                        </div>
-                        <div class="result-item">
-                            <label>Priority</label>
-                            <span id="result-priority" class="badge">Loading...</span>
-                        </div>
-                    </div>
-
-                    <div id="entities-container" class="entities-section hidden">
-                        <label>Extracted Information</label>
-                        <div id="entities-list" class="tags-container"></div>
-                    </div>
-
-                    <div class="action-buttons">
-                        <button class="btn-secondary" onclick="resetForm()">Discard</button>
-                        <button class="btn-primary" onclick="submitTicket()">
-                            <i class="fas fa-paper-plane"></i> Submit Ticket
+                <div class="flex items-center gap-4">
+                    <div class="relative group">
+                        <button class="p-2.5 rounded-xl bg-dark-lighter border border-slate-800 text-slate-400 hover:text-white hover:border-brand-500 transition-all">
+                            <i class="fas fa-bell"></i>
+                            <span class="absolute top-2 right-2 w-2 h-2 bg-brand-500 rounded-full border-2 border-dark-lighter"></span>
                         </button>
                     </div>
+                    <div class="h-10 w-[1px] bg-slate-800 mx-2"></div>
+                    <div class="flex items-center gap-3 bg-dark-lighter p-1.5 pr-4 rounded-xl border border-slate-800 hover:border-brand-500 cursor-pointer transition-all group">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white font-bold">SB</div>
+                        <div class="text-sm font-medium text-slate-300 group-hover:text-white transition-colors">Spring Board</div>
+                        <i class="fas fa-chevron-down text-xs text-slate-500 group-hover:text-brand-400"></i>
+                    </div>
                 </div>
-            </section>
+            </header>
 
-            <!-- History Section -->
-            <section id="history-section" class="hidden-section">
-                <header>
-                    <h1>Recent Tickets</h1>
-                    <button class="refresh-btn" onclick="fetchTickets()">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
-                </header>
-                <div id="tickets-list" class="tickets-grid">
-                    <!-- Tickets will be injected here -->
+            <!-- Sections Container -->
+            <div id="content-container" class="relative">
+                
+                <!-- Dashboard Section -->
+                <section id="dashboard-section" class="tab-content">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <!-- Stat Card 1 -->
+                        <div class="bg-dark-lighter rounded-2xl p-6 border border-slate-800 hover:border-brand-500/30 transition-all group">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-brand-500/10 rounded-xl flex items-center justify-center text-brand-400 group-hover:bg-brand-500 group-hover:text-white transition-all duration-300">
+                                    <i class="fas fa-ticket-alt text-xl"></i>
+                                </div>
+                                <span class="text-emerald-400 text-xs font-bold bg-emerald-400/10 px-2 py-1 rounded-lg">+12.5%</span>
+                            </div>
+                            <h3 class="text-slate-400 text-sm font-medium">Total Tickets</h3>
+                            <p class="text-2xl font-bold text-white mt-1">1,284</p>
+                        </div>
+                        <!-- Stat Card 2 -->
+                        <div class="bg-dark-lighter rounded-2xl p-6 border border-slate-800 hover:border-brand-500/30 transition-all group">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-400 group-hover:bg-amber-500 group-hover:text-white transition-all duration-300">
+                                    <i class="fas fa-bolt text-xl"></i>
+                                </div>
+                                <span class="text-amber-400 text-xs font-bold bg-amber-400/10 px-2 py-1 rounded-lg">Pending</span>
+                            </div>
+                            <h3 class="text-slate-400 text-sm font-medium">AI Categorized</h3>
+                            <p class="text-2xl font-bold text-white mt-1">98.2%</p>
+                        </div>
+                        <!-- Stat Card 3 -->
+                        <div class="bg-dark-lighter rounded-2xl p-6 border border-slate-800 hover:border-brand-500/30 transition-all group">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
+                                    <i class="fas fa-clock text-xl"></i>
+                                </div>
+                                <span class="text-emerald-400 text-xs font-bold bg-emerald-400/10 px-2 py-1 rounded-lg">-24m</span>
+                            </div>
+                            <h3 class="text-slate-400 text-sm font-medium">Avg. Response</h3>
+                            <p class="text-2xl font-bold text-white mt-1">1.4h</p>
+                        </div>
+                        <!-- Stat Card 4 -->
+                        <div class="bg-dark-lighter rounded-2xl p-6 border border-slate-800 hover:border-brand-500/30 transition-all group">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-rose-500/10 rounded-xl flex items-center justify-center text-rose-400 group-hover:bg-rose-500 group-hover:text-white transition-all duration-300">
+                                    <i class="fas fa-smile text-xl"></i>
+                                </div>
+                                <span class="text-emerald-400 text-xs font-bold bg-emerald-400/10 px-2 py-1 rounded-lg">+4%</span>
+                            </div>
+                            <h3 class="text-slate-400 text-sm font-medium">Satisfaction</h3>
+                            <p class="text-2xl font-bold text-white mt-1">4.9/5</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2 bg-dark-lighter rounded-2xl p-6 border border-slate-800">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-lg font-bold text-white">System Analytics</h3>
+                                <div class="flex gap-2">
+                                    <button onclick="exportData()" class="px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition-all flex items-center gap-2">
+                                        <i class="fas fa-download"></i> Export
+                                    </button>
+                                    <button class="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:text-white">Weekly</button>
+                                    <button class="px-3 py-1.5 text-xs font-medium rounded-lg bg-brand-600 text-white">Monthly</button>
+                                </div>
+                            </div>
+                            <div class="h-64 flex items-end justify-between gap-2 px-2">
+                                <!-- Mock Chart Bars -->
+                                <div class="w-full bg-slate-800 rounded-t-lg relative group h-[40%]"><div class="absolute bottom-0 w-full bg-brand-500 rounded-t-lg transition-all h-[60%] group-hover:h-[80%]"></div></div>
+                                <div class="w-full bg-slate-800 rounded-t-lg relative group h-[55%]"><div class="absolute bottom-0 w-full bg-brand-500 rounded-t-lg transition-all h-[40%] group-hover:h-[60%]"></div></div>
+                                <div class="w-full bg-slate-800 rounded-t-lg relative group h-[70%]"><div class="absolute bottom-0 w-full bg-brand-500 rounded-t-lg transition-all h-[75%] group-hover:h-[90%]"></div></div>
+                                <div class="w-full bg-slate-800 rounded-t-lg relative group h-[45%]"><div class="absolute bottom-0 w-full bg-brand-500 rounded-t-lg transition-all h-[50%] group-hover:h-[70%]"></div></div>
+                                <div class="w-full bg-slate-800 rounded-t-lg relative group h-[85%]"><div class="absolute bottom-0 w-full bg-brand-500 rounded-t-lg transition-all h-[80%] group-hover:h-[95%]"></div></div>
+                                <div class="w-full bg-slate-800 rounded-t-lg relative group h-[60%]"><div class="absolute bottom-0 w-full bg-brand-500 rounded-t-lg transition-all h-[65%] group-hover:h-[85%]"></div></div>
+                                <div class="w-full bg-slate-800 rounded-t-lg relative group h-[95%]"><div class="absolute bottom-0 w-full bg-brand-500 rounded-t-lg transition-all h-[90%] group-hover:h-[100%]"></div></div>
+                            </div>
+                            <div class="flex justify-between mt-4 px-2">
+                                <span class="text-xs text-slate-500 font-medium">Mon</span>
+                                <span class="text-xs text-slate-500 font-medium">Tue</span>
+                                <span class="text-xs text-slate-500 font-medium">Wed</span>
+                                <span class="text-xs text-slate-500 font-medium">Thu</span>
+                                <span class="text-xs text-slate-500 font-medium">Fri</span>
+                                <span class="text-xs text-slate-500 font-medium">Sat</span>
+                                <span class="text-xs text-slate-500 font-medium">Sun</span>
+                            </div>
+                        </div>
+                        <div class="bg-dark-lighter rounded-2xl p-6 border border-slate-800">
+                            <h3 class="text-lg font-bold text-white mb-6">Efficiency Breakdown</h3>
+                            <div class="space-y-6">
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm font-medium text-slate-400">Auto-Categorization</span>
+                                        <span class="text-sm font-bold text-white">94%</span>
+                                    </div>
+                                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                                        <div class="h-full bg-brand-500 w-[94%]"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm font-medium text-slate-400">Sentiment Analysis</span>
+                                        <span class="text-sm font-bold text-white">87%</span>
+                                    </div>
+                                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                                        <div class="h-full bg-indigo-500 w-[87%]"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm font-medium text-slate-400">Entity Extraction</span>
+                                        <span class="text-sm font-bold text-white">72%</span>
+                                    </div>
+                                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                                        <div class="h-full bg-amber-500 w-[72%]"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-sm font-medium text-slate-400">Language Detection</span>
+                                        <span class="text-sm font-bold text-white">99%</span>
+                                    </div>
+                                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                                        <div class="h-full bg-emerald-500 w-[99%]"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-8 pt-8 border-t border-slate-800">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-full bg-brand-500/10 flex items-center justify-center text-brand-400">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-white">GDPR Compliant</p>
+                                        <p class="text-xs text-slate-500">Enterprise grade security</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Create Ticket Section -->
+                <section id="create-section" class="tab-content hidden">
+                    <div class="max-w-4xl mx-auto">
+                        <div class="bg-dark-lighter rounded-3xl p-8 border border-slate-800 shadow-2xl relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-64 h-64 bg-brand-600/5 rounded-full blur-3xl -mr-32 -mt-32"></div>
+                            
+                            <div class="relative z-10">
+                                <div class="flex items-center gap-4 mb-8">
+                                    <div class="w-12 h-12 bg-brand-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-brand-600/20">
+                                        <i class="fas fa-pen-nib text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="text-2xl font-bold text-white">New Submission</h2>
+                                        <p class="text-slate-400">Explain your issue and let AI do the rest.</p>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-6">
+                                    <div class="space-y-2">
+                                        <label class="text-sm font-semibold text-slate-300 ml-1">Issue Description</label>
+                                        <textarea id="ticket-input" rows="6" class="w-full bg-slate-900/50 border border-slate-800 rounded-2xl p-5 text-white placeholder-slate-600 focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition-all resize-none" placeholder="Explain the problem in detail (e.g., 'VPN is not connecting on my MacBook with error 503...')"></textarea>
+                                    </div>
+
+                                    <button id="analyze-btn" onclick="analyzeTicket()" class="w-full py-4 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white font-bold rounded-2xl shadow-xl shadow-brand-600/25 transition-all transform active:scale-[0.98] flex items-center justify-center gap-3">
+                                        <i class="fas fa-sparkles"></i>
+                                        <span>Run AI Analysis</span>
+                                    </button>
+                                </div>
+
+                                <!-- Analysis Results -->
+                                <div id="analysis-result" class="mt-8 hidden animate-fade-in">
+                                    <div class="p-6 bg-slate-900/80 rounded-2xl border border-brand-500/20">
+                                        <div class="flex items-center justify-between mb-6">
+                                            <h4 class="text-white font-bold flex items-center gap-2">
+                                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                                Analysis Result
+                                            </h4>
+                                            <button class="text-slate-500 hover:text-white transition-colors" onclick="resetForm()">
+                                                <i class="fas fa-rotate-left"></i>
+                                            </button>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                            <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
+                                                <label class="text-[10px] uppercase font-bold text-slate-500 tracking-wider block mb-1">Detected Category</label>
+                                                <span id="result-category" class="text-white font-semibold">Loading...</span>
+                                            </div>
+                                            <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
+                                                <label class="text-[10px] uppercase font-bold text-slate-500 tracking-wider block mb-1">AI Priority</label>
+                                                <span id="result-priority" class="px-2 py-0.5 rounded-lg text-xs font-bold uppercase tracking-wider">Loading...</span>
+                                            </div>
+                                        </div>
+
+                                        <div id="entities-container" class="mb-8 hidden">
+                                            <label class="text-[10px] uppercase font-bold text-slate-500 tracking-wider block mb-3 ml-1">Extracted Entities</label>
+                                            <div id="entities-list" class="flex flex-wrap gap-2"></div>
+                                        </div>
+
+                                        <div class="flex items-center gap-4">
+                                            <button onclick="submitTicket()" class="flex-1 py-3 bg-white text-dark font-bold rounded-xl hover:bg-slate-100 transition-all flex items-center justify-center gap-2">
+                                                <i class="fas fa-paper-plane"></i>
+                                                Confirm & Submit
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- History Section -->
+                <section id="history-section" class="tab-content hidden">
+                    <div class="bg-dark-lighter rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
+                        <div class="p-6 border-b border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h3 class="text-lg font-bold text-white">Submission History</h3>
+                                <p class="text-xs text-slate-500 mt-1">Manage and track your AI-categorized tickets.</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="relative">
+                                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                                    <input type="text" id="ticket-search" onkeyup="filterTickets()" placeholder="Search tickets..." class="bg-slate-900 border border-slate-700 rounded-lg py-2 pl-9 pr-4 text-xs text-white focus:outline-none focus:border-brand-500 transition-all w-full md:w-64">
+                                </div>
+                                <select id="filter-priority" onchange="filterTickets()" class="bg-slate-900 border border-slate-700 rounded-lg py-2 px-3 text-xs text-white focus:outline-none focus:border-brand-500 transition-all">
+                                    <option value="all">All Priority</option>
+                                    <option value="high">High</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="low">Low</option>
+                                </select>
+                                <button onclick="fetchTickets()" class="p-2 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-lg transition-colors">
+                                    <i class="fas fa-sync-alt text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="tickets-list" class="divide-y divide-slate-800">
+                            <!-- Tickets injected here -->
+                            <div class="p-12 text-center">
+                                <i class="fas fa-inbox text-5xl text-slate-700 mb-4"></i>
+                                <p class="text-slate-500">No tickets found.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section id="settings-section" class="tab-content hidden">
+                    <div class="max-w-4xl mx-auto space-y-8">
+                        <!-- Profile Settings -->
+                        <div class="bg-dark-lighter rounded-2xl border border-slate-800 p-8 shadow-xl">
+                            <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-3">
+                                <i class="fas fa-user-circle text-brand-500"></i>
+                                User Profile
+                            </h3>
+                            <div class="flex items-center gap-6 mb-8">
+                                <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-brand-500/20">SB</div>
+                                <div>
+                                    <h4 class="text-white font-bold text-lg">Spring Board</h4>
+                                    <p class="text-slate-500 text-sm">Enterprise Administrator</p>
+                                    <button class="mt-2 text-xs font-bold text-brand-400 hover:text-brand-300 transition-colors">Change Avatar</button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Full Name</label>
+                                    <input type="text" value="Spring Board" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-brand-500 transition-all">
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Email Address</label>
+                                    <input type="email" value="admin@aiticket.io" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-brand-500 transition-all">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- System Settings -->
+                        <div class="bg-dark-lighter rounded-2xl border border-slate-800 p-8 shadow-xl">
+                            <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-3">
+                                <i class="fas fa-sliders text-brand-500"></i>
+                                System Preferences
+                            </h3>
+                            <div class="space-y-6">
+                                <div class="flex items-center justify-between p-4 bg-slate-900/50 rounded-xl border border-slate-800">
+                                    <div>
+                                        <p class="text-sm font-bold text-white">AI Auto-Triage</p>
+                                        <p class="text-xs text-slate-500">Automatically categorize incoming tickets using Neural Engine.</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer">
+                                        <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+                                    </label>
+                                </div>
+                                <div class="flex items-center justify-between p-4 bg-slate-900/50 rounded-xl border border-slate-800">
+                                    <div>
+                                        <p class="text-sm font-bold text-white">Real-time Notifications</p>
+                                        <p class="text-xs text-slate-500">Receive instant desktop alerts for high-priority tickets.</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer">
+                                        <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+                                    </label>
+                                </div>
+                                <div class="flex items-center justify-between p-4 bg-slate-900/50 rounded-xl border border-slate-800">
+                                    <div>
+                                        <p class="text-sm font-bold text-white">Advanced Analytics</p>
+                                        <p class="text-xs text-slate-500">Enable detailed sentiment and entity extraction reports.</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end gap-4">
+                            <button class="px-6 py-2.5 text-sm font-bold text-slate-400 hover:text-white transition-colors">Discard Changes</button>
+                            <button onclick="showNotification('Settings Saved', 'Your preferences have been updated successfully.')" class="px-6 py-2.5 bg-brand-600 hover:bg-brand-500 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-brand-600/20">Save Settings</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- About Section -->
+                <section id="about-section" class="tab-content hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-8">
+                        <div>
+                            <span class="px-3 py-1 bg-brand-500/10 text-brand-400 text-xs font-bold rounded-full uppercase tracking-wider mb-6 inline-block border border-brand-500/20">Our Mission</span>
+                            <h2 class="text-4xl font-bold text-white leading-tight mb-6">Revolutionizing Support with Intelligence.</h2>
+                            <p class="text-slate-400 text-lg leading-relaxed mb-8">
+                                AITicket isn't just a helpdesk platform. We're an advanced AI layer that sits between your users and your support team, automating the heavy lifting of triage, routing, and basic resolution.
+                            </p>
+                            
+                            <div class="grid grid-cols-2 gap-6 mb-10">
+                                <div class="space-y-2">
+                                    <div class="text-brand-500 text-2xl font-bold">50ms</div>
+                                    <p class="text-sm text-slate-500 font-medium">Prediction Speed</p>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="text-indigo-500 text-2xl font-bold">99.9%</div>
+                                    <p class="text-sm text-slate-500 font-medium">Uptime Guarantee</p>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="text-amber-500 text-2xl font-bold">40%</div>
+                                    <p class="text-sm text-slate-500 font-medium">Cost Reduction</p>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="text-rose-500 text-2xl font-bold">24/7</div>
+                                    <p class="text-sm text-slate-500 font-medium">AI Availability</p>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-wrap gap-4">
+                                <button class="px-8 py-3 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-brand-600/20">Read Docs</button>
+                                <button class="px-8 py-3 border border-slate-700 hover:border-slate-500 text-white font-bold rounded-xl transition-all">View API</button>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute inset-0 bg-brand-600/20 rounded-full blur-[120px] -z-10"></div>
+                            <div class="bg-slate-900/50 rounded-3xl p-8 border border-slate-800 shadow-2xl backdrop-blur-sm">
+                                <div class="space-y-6">
+                                    <div class="p-4 bg-slate-800/50 rounded-2xl border border-slate-700 flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-xl bg-brand-500 flex items-center justify-center text-white"><i class="fas fa-brain"></i></div>
+                                        <div class="text-sm font-bold text-white">Neural Engine V4.2</div>
+                                    </div>
+                                    <div class="p-4 bg-slate-800/50 rounded-2xl border border-slate-700 flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center text-white"><i class="fas fa-language"></i></div>
+                                        <div class="text-sm font-bold text-white">Multi-lingual NLP</div>
+                                    </div>
+                                    <div class="p-4 bg-slate-800/50 rounded-2xl border border-slate-700 flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white"><i class="fas fa-link"></i></div>
+                                        <div class="text-sm font-bold text-white">Webhook Integration</div>
+                                    </div>
+                                </div>
+                                <div class="mt-8 pt-8 border-t border-slate-800">
+                                    <p class="text-xs text-slate-500 italic">"The future of customer support is here, and it's powered by silicon and logic."</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Footer -->
+            <footer class="mt-20 pt-12 border-t border-slate-800">
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12 mb-12">
+                    <div class="col-span-2">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white">
+                                <i class="fas fa-robot text-sm"></i>
+                            </div>
+                            <span class="text-lg font-bold text-white">AITicket</span>
+                        </div>
+                        <p class="text-slate-500 max-w-xs leading-relaxed">
+                            Revolutionizing support ticket management with artificial intelligence. Automate categorization, prioritization, and routing with our advanced AI platform.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold mb-6">Product</h4>
+                        <ul class="space-y-4 text-sm font-medium text-slate-500">
+                            <li><a href="#" class="hover:text-brand-400 transition-colors">Features</a></li>
+                            <li><a href="#" class="hover:text-brand-400 transition-colors">Pricing</a></li>
+                            <li><a href="#" class="hover:text-brand-400 transition-colors">API Reference</a></li>
+                            <li><a href="#" class="hover:text-brand-400 transition-colors">Documentation</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold mb-6">Company</h4>
+                        <ul class="space-y-4 text-sm font-medium text-slate-500">
+                            <li><a href="#" class="hover:text-brand-400 transition-colors">About Us</a></li>
+                            <li><a href="#" class="hover:text-brand-400 transition-colors">Careers</a></li>
+                            <li><a href="#" class="hover:text-brand-400 transition-colors">Blog</a></li>
+                            <li><a href="#" class="hover:text-brand-400 transition-colors">Legal</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold mb-6">Resources</h4>
+                        <ul class="space-y-4 text-sm font-medium text-slate-500">
+                            <li><a href="#" class="hover:text-brand-400 transition-colors">Help Center</a></li>
+                            <li><a href="#" class="hover:text-brand-400 transition-colors">Community</a></li>
+                            <li><a href="#" class="hover:text-brand-400 transition-colors">Privacy Policy</a></li>
+                            <li><a href="#" class="hover:text-brand-400 transition-colors">Terms of Service</a></li>
+                        </ul>
+                    </div>
                 </div>
-            </section>
+                <div class="py-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <p class="text-xs text-slate-600">© 2026 AITicket Platform. All rights reserved.</p>
+                    <div class="flex gap-6">
+                        <a href="#" class="text-slate-600 hover:text-white transition-colors"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-slate-600 hover:text-white transition-colors"><i class="fab fa-github"></i></a>
+                        <a href="#" class="text-slate-600 hover:text-white transition-colors"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </footer>
         </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification" class="fixed bottom-8 right-8 translate-y-20 opacity-0 transition-all duration-500 z-[100]">
+        <div class="bg-white rounded-2xl p-4 shadow-2xl flex items-center gap-4 min-w-[300px]">
+            <div id="notif-icon" class="w-10 h-10 rounded-xl flex items-center justify-center text-white"></div>
+            <div>
+                <p id="notif-title" class="text-sm font-bold text-dark"></p>
+                <p id="notif-message" class="text-xs text-slate-500"></p>
+            </div>
+        </div>
     </div>
 
     <script src="js/script.js"></script>
