@@ -7,39 +7,8 @@
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/HarshaGankidi/AI-TICKET/main/frontend/logo.png">
-    <!-- Tailwind CSS for rapid professional styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#fff1f2',
-                            100: '#ffe4e6',
-                            200: '#fecdd3',
-                            300: '#fda4af',
-                            400: '#fb7185',
-                            500: '#f43f5e',
-                            600: '#e11d48',
-                            700: '#be123c',
-                            800: '#9f1239',
-                            900: '#881337',
-                        },
-                        dark: {
-                            DEFAULT: '#0a0a0a',
-                            lighter: '#171717',
-                            card: '#1c1c1c',
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
+    <link rel="icon" type="image/x-icon" href="logo.png">
+    <link href="dist/style.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <style>
         .auth-screen {
@@ -54,13 +23,14 @@
         }
     </style>
 </head>
-<body class="bg-dark text-slate-200 font-sans antialiased overflow-x-hidden">
+<body class="bg-dark text-slate-200 font-sans antialiased">
     <!-- Auth Screen -->
     <div id="auth-screen" class="fixed inset-0 z-[100] auth-screen flex items-center justify-center p-4">
         <div class="w-full max-w-md">
             <div class="text-center mb-10">
-                <div class="w-20 h-20 bg-brand-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-brand-500/20 mx-auto mb-6">
-                    <img src="https://raw.githubusercontent.com/HarshaGankidi/AI-TICKET/main/frontend/logo.png" alt="Support Hub" class="w-12 h-12 object-contain">
+                <div class="w-20 h-20 bg-white rounded-3xl flex items-center justify-center shadow-2xl shadow-white/10 mx-auto mb-6">
+                    <img src="logo.png" alt="Support Hub" class="w-12 h-12 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <i class="fas fa-headset text-brand-600 text-3xl hidden"></i>
                 </div>
                 <h1 class="text-3xl font-bold text-white tracking-tight mb-2">Support Hub</h1>
                 <p class="text-slate-400">Enterprise Ticket Management Platform</p>
@@ -116,10 +86,11 @@
 
     <!-- Main App Content (Hidden by default) -->
     <div id="main-app" class="flex min-h-screen opacity-0 transition-opacity duration-500">
-        <aside class="w-64 bg-dark-lighter border-r border-slate-800 flex flex-col fixed h-full transition-all duration-300 z-50 overflow-hidden" id="sidebar">
+        <aside class="w-64 bg-dark-lighter border-r border-slate-800 flex flex-col fixed h-full transition-all duration-300 z-50" id="sidebar">
             <div class="p-6 flex items-center gap-3">
-                <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/20">
-                    <img src="https://raw.githubusercontent.com/HarshaGankidi/AI-TICKET/main/frontend/logo.png" alt="Logo" class="w-6 h-6 object-contain">
+                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-white/10">
+                    <img src="logo.png" alt="Logo" class="w-6 h-6 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <i class="fas fa-headset text-brand-600 text-xs hidden"></i>
                 </div>
                 <span class="text-xl font-bold tracking-tight text-white whitespace-nowrap">Support Hub</span>
             </div>
@@ -544,7 +515,7 @@
                     <div class="col-span-2">
                         <div class="flex items-center gap-3 mb-6">
                             <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white">
-                                <img src="logo.png" alt="Logo" class="w-5 h-5 object-contain">
+                                <img src="https://raw.githubusercontent.com/HarshaGankidi/AI-TICKET/main/frontend/logo.png" alt="Logo" class="w-5 h-5 object-contain">
                             </div>
                             <span class="text-lg font-bold text-white">Support Hub</span>
                         </div>
@@ -599,10 +570,6 @@
             </div>
         </div>
     </div>
-
-    <script src="js/script.js"></script>
-</body>
-</html>
 
     <script src="js/script.js"></script>
 </body>

@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "npx serve .",
     "start": "npx serve .",
+    "tailwind:build": "npx tailwindcss -i ./src/style.css -o ./dist/style.css --minify",
+    "tailwind:watch": "npx tailwindcss -i ./src/style.css -o ./dist/style.css --watch",
     "build": "echo 'Building for production...' && if not exist dist mkdir dist && xcopy /y /s /e . dist\\ /exclude:package.json && echo 'Build complete: files are in dist/'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,6 +19,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "serve": "^14.2.0"
+    "serve": "^14.2.0",
+    "tailwindcss": "^3.4.10"
   }
 }

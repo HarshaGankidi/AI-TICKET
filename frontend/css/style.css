@@ -22,8 +22,7 @@
 body {
     background-color: var(--background-color);
     color: var(--text-primary);
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
 }
 
 .container {

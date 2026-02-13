@@ -25,6 +25,9 @@ frontend/.env
 Thumbs.db
 
 # Project specific
+node_modules/
+dist/
+build/
 backend/app/ml/models/*.pkl
 data/dataset/
 data/processed/
