@@ -23,10 +23,6 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Customer Support Hub", description="Advanced Support Ticket Management System")
 
-@app.get("/")
-def read_root():
-    return {"status": "online", "message": "Support Hub API is running"}
-
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
@@ -111,7 +107,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
 
 @app.get("/")
 def read_root():
-    return {"message": "Support Hub API is operational"}
+    return {"status": "online", "message": "Support Hub API is running"}
 
 # Auth Endpoints
 @app.post("/register", response_model=UserOut)

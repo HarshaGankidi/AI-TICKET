@@ -9,8 +9,7 @@ let currentUser = null;
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     checkSystemStatus();
-    // Default to dashboard
-    switchTab('dashboard');
+    // Default tab will be set after auth
 });
 
 // Auth Logic
@@ -35,6 +34,8 @@ async function checkAuth() {
     if (!token) {
         authScreen.classList.remove('hidden');
         mainApp.classList.add('opacity-0');
+        document.body.classList.add('no-scroll');
+        document.documentElement.classList.add('no-scroll');
         return;
     }
 
@@ -48,12 +49,17 @@ async function checkAuth() {
             updateUIWithUser();
             authScreen.classList.add('hidden');
             mainApp.classList.remove('opacity-0');
+            document.body.classList.remove('no-scroll');
+            document.documentElement.classList.remove('no-scroll');
+            switchTab('home');
             fetchTickets();
             updateDashboardStats();
         } else {
             localStorage.removeItem('token');
             authScreen.classList.remove('hidden');
             mainApp.classList.add('opacity-0');
+            document.body.classList.add('no-scroll');
+            document.documentElement.classList.add('no-scroll');
         }
     } catch (error) {
         console.error('Auth check failed:', error);
@@ -184,11 +190,14 @@ function switchTab(tab) {
 
     // Update Header
     const titles = {
+        home: { t: "Welcome", s: "Start by creating a new ticket." },
         dashboard: { t: "Workspace Overview", s: "Monitor your ticket performance and platform health." },
         create: { t: "New Support Request", s: "Submit a new ticket for processing and resolution." },
         history: { t: "Request History", s: "View and manage your previous support requests." },
         settings: { t: "Profile Settings", s: "Manage your account and notification preferences." },
-        about: { t: "Support Platform", s: "Enterprise-grade ticket management infrastructure." }
+        about: { t: "About", s: "Learn about the platform and its capabilities." },
+        help: { t: "Help Center", s: "Browse FAQs and find quick answers." },
+        contact: { t: "Contact", s: "Share your details and we will reach out." }
     };
 
     document.getElementById('page-title').textContent = titles[tab].t;
@@ -199,6 +208,30 @@ function switchTab(tab) {
     }
 }
 
+function goToPlatformActivity() {
+    switchTab('dashboard');
+    setTimeout(() => {
+        const el = document.getElementById('platform-activity');
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, 200);
+}
+
+function handleContactSubmit(e) {
+    e.preventDefault();
+    const name = document.getElementById('contact-name').value.trim();
+    const email = document.getElementById('contact-email').value.trim();
+    const message = document.getElementById('contact-message').value.trim();
+    if (!name || !email || !message) {
+        showNotification("Missing Details", "Please fill in all fields.", "error");
+        return;
+    }
+    showNotification("Submitted", "Our support team will contact you shortly.");
+    document.getElementById('contact-name').value = '';
+    document.getElementById('contact-email').value = '';
+    document.getElementById('contact-message').value = '';
+}
 // Notification Helper
 function showNotification(title, message, type = 'success') {
     const toast = document.getElementById('notification');

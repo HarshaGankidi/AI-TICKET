@@ -1,10 +1,10 @@
 :root {
-    --primary-color: #4361ee;
-    --secondary-color: #3f37c9;
-    --background-color: #f8f9fa;
-    --sidebar-color: #ffffff;
-    --text-primary: #2b2d42;
-    --text-secondary: #8d99ae;
+    --primary-color: #10b981;
+    --secondary-color: #0ea5e9;
+    --background-color: #0b0f14;
+    --sidebar-color: #0e1318;
+    --text-primary: #e5e7eb;
+    --text-secondary: #94a3b8;
     --success-color: #2ecc71;
     --warning-color: #f39c12;
     --danger-color: #e74c3c;
@@ -23,6 +23,7 @@ body {
     background-color: var(--background-color);
     color: var(--text-primary);
     min-height: 100vh;
+    overflow-y: auto;
 }
 
 .container {
@@ -284,6 +285,7 @@ button {
     color: #666;
     display: -webkit-box;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
