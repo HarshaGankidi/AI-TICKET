@@ -66,6 +66,26 @@ async function checkAuth() {
     }
 }
 
+async function initAfterLogin() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+        const response = await fetch(`${API_URL}/users/me`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+            currentUser = await response.json();
+            updateUIWithUser();
+            fetchTickets();
+            updateDashboardStats();
+        }
+    } catch (error) {
+        console.error('Post-login init failed:', error);
+    }
+}
+
 async function handleLogin(e) {
     e.preventDefault();
     const email = document.getElementById('login-email').value;
@@ -89,7 +109,15 @@ async function handleLogin(e) {
 
         const data = await response.json();
         localStorage.setItem('token', data.access_token);
-        await checkAuth();
+
+        const authScreen = document.getElementById('auth-screen');
+        const mainApp = document.getElementById('main-app');
+        authScreen.classList.add('hidden');
+        mainApp.classList.remove('opacity-0');
+        document.body.classList.remove('no-scroll');
+        document.documentElement.classList.remove('no-scroll');
+        switchTab('home');
+        initAfterLogin();
         showNotification("Welcome Back!", "Successfully signed into your workspace.");
     } catch (error) {
         showNotification("Login Failed", error.message, "error");
