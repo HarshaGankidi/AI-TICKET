@@ -89,7 +89,18 @@ async function handleLogin(e) {
 
         const data = await response.json();
         localStorage.setItem('token', data.access_token);
-        await checkAuth();
+        currentUser = data.user;
+        updateUIWithUser();
+
+        const authScreen = document.getElementById('auth-screen');
+        const mainApp = document.getElementById('main-app');
+        authScreen.classList.add('hidden');
+        mainApp.classList.remove('opacity-0');
+        document.body.classList.remove('no-scroll');
+        document.documentElement.classList.remove('no-scroll');
+        switchTab('home');
+        fetchTickets();
+        updateDashboardStats();
         showNotification("Welcome Back!", "Successfully signed into your workspace.");
     } catch (error) {
         showNotification("Login Failed", error.message, "error");
@@ -121,8 +132,34 @@ async function handleSignup(e) {
             throw new Error(data.detail || 'Registration failed');
         }
 
-        showNotification("Account Created", "Please sign in with your new credentials.");
-        toggleAuth('login');
+        const loginForm = new FormData();
+        loginForm.append('username', email);
+        loginForm.append('password', password);
+
+        const loginResponse = await fetch(`${API_URL}/token`, {
+            method: 'POST',
+            body: loginForm
+        });
+
+        if (!loginResponse.ok) {
+            throw new Error('Account created but login failed');
+        }
+
+        const loginData = await loginResponse.json();
+        localStorage.setItem('token', loginData.access_token);
+        currentUser = loginData.user;
+        updateUIWithUser();
+
+        const authScreen = document.getElementById('auth-screen');
+        const mainApp = document.getElementById('main-app');
+        authScreen.classList.add('hidden');
+        mainApp.classList.remove('opacity-0');
+        document.body.classList.remove('no-scroll');
+        document.documentElement.classList.remove('no-scroll');
+        switchTab('home');
+        fetchTickets();
+        updateDashboardStats();
+        showNotification("Account Created", "You are now signed into your workspace.");
     } catch (error) {
         showNotification("Signup Failed", error.message, "error");
     } finally {
