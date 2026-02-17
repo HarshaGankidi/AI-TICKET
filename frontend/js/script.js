@@ -12,6 +12,33 @@ document.addEventListener('DOMContentLoaded', () => {
     // Default tab will be set after auth
 });
 
+function openAuthModal(type = 'login') {
+    const modal = document.getElementById('auth-modal');
+    const loginCont = document.getElementById('login-container');
+    const signupCont = document.getElementById('signup-container');
+    if (!modal || !loginCont || !signupCont) return;
+
+    if (type === 'signup') {
+        loginCont.classList.add('hidden');
+        signupCont.classList.remove('hidden');
+    } else {
+        signupCont.classList.add('hidden');
+        loginCont.classList.remove('hidden');
+    }
+
+    modal.classList.remove('hidden');
+    document.body.classList.add('no-scroll');
+    document.documentElement.classList.add('no-scroll');
+}
+
+function closeAuthModal() {
+    const modal = document.getElementById('auth-modal');
+    if (!modal) return;
+    modal.classList.add('hidden');
+    document.body.classList.remove('no-scroll');
+    document.documentElement.classList.remove('no-scroll');
+}
+
 // Auth Logic
 function toggleAuth(type) {
     const loginCont = document.getElementById('login-container');
@@ -34,8 +61,8 @@ async function checkAuth() {
     if (!token) {
         authScreen.classList.remove('hidden');
         mainApp.classList.add('opacity-0');
-        document.body.classList.add('no-scroll');
-        document.documentElement.classList.add('no-scroll');
+        document.body.classList.remove('no-scroll');
+        document.documentElement.classList.remove('no-scroll');
         return;
     }
 
@@ -47,6 +74,8 @@ async function checkAuth() {
         if (response.ok) {
             currentUser = await response.json();
             updateUIWithUser();
+            const authModal = document.getElementById('auth-modal');
+            if (authModal) authModal.classList.add('hidden');
             authScreen.classList.add('hidden');
             mainApp.classList.remove('opacity-0');
             document.body.classList.remove('no-scroll');
