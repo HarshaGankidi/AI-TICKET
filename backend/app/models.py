@@ -24,6 +24,8 @@ class Ticket(Base):
     extracted_entities = Column(JSON, nullable=True)
     status = Column(String, default="New")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    rating = Column(Integer, nullable=True)
+    first_response_seconds = Column(Integer, nullable=True)
     owner_id = Column(Integer, ForeignKey("users.id"))
     
     owner = relationship("User", back_populates="tickets")

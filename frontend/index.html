@@ -283,6 +283,10 @@
                     <i class="fas fa-list-check mr-3 text-lg transition-colors group-hover:text-emerald-400"></i>
                     My Tickets
                 </a>
+                <a href="#" onclick="switchTab('reviews')" class="nav-item group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-teal-900/40 transition-all" id="nav-reviews">
+                    <i class="fas fa-star-half-alt mr-3 text-lg transition-colors group-hover:text-emerald-400"></i>
+                    Reviews
+                </a>
                 <a href="#" onclick="switchTab('settings')" class="nav-item group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:text-white hover:bg-teal-900/40 transition-all" id="nav-settings">
                     <i class="fas fa-user-gear mr-3 text-lg transition-colors group-hover:text-emerald-400"></i>
                     Account
@@ -375,11 +379,28 @@
                                 <div>
                                     <div class="bg-dark-lighter rounded-2xl border border-slate-800 p-6 shadow-sm cursor-pointer" onclick="goToPlatformActivity()">
                                         <div class="flex items-center justify-between mb-4">
-                                            <h4 class="text-white font-bold">AI Insights</h4>
-                                            <button type="button" class="px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-slate-400 border border-slate-700">Analytics</button>
+                                            <h4 class="text-white font-bold">Workspace Preview</h4>
+                                            <button type="button" class="px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-slate-400 border border-slate-700">Live Stats</button>
                                         </div>
-                                        <div class="h-48 md:h-64 bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-center text-slate-600">
-                                            <i class="fas fa-chart-line text-2xl"></i>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <p class="text-xs text-slate-500 mb-1">Tickets handled</p>
+                                                <p class="text-lg font-bold text-white"><span id="preview-tickets">0</span></p>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-slate-500 mb-1">Median response</p>
+                                                <p class="text-lg font-bold text-white"><span id="preview-response">–</span></p>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-slate-500 mb-1">Client rating</p>
+                                                <p class="text-lg font-bold text-white"><span id="preview-rating">–</span>/5</p>
+                                            </div>
+                                            <div class="flex items-center justify-end">
+                                                <span class="inline-flex items-center gap-1 text-[11px] text-slate-500">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                    Updated from your workspace
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -410,7 +431,7 @@
                                 <span class="text-amber-400 text-xs font-bold bg-amber-400/10 px-2 py-1 rounded-lg">Operational</span>
                             </div>
                             <h3 class="text-slate-400 text-sm font-medium">Auto-Resolution</h3>
-                            <p class="text-2xl font-bold text-white mt-1">94.8%</p>
+                            <p class="text-2xl font-bold text-white mt-1" id="stat-auto">0%</p>
                         </div>
                         <!-- Stat Card 3 -->
                         <div class="bg-dark-lighter rounded-2xl p-6 border border-slate-800 hover:border-brand-500/30 transition-all group shadow-sm">
@@ -421,7 +442,7 @@
                                 <span class="text-emerald-400 text-xs font-bold bg-emerald-400/10 px-2 py-1 rounded-lg">Fast</span>
                             </div>
                             <h3 class="text-slate-400 text-sm font-medium">Response Time</h3>
-                            <p class="text-2xl font-bold text-white mt-1">12m</p>
+                            <p class="text-2xl font-bold text-white mt-1" id="stat-response">–</p>
                         </div>
                         <!-- Stat Card 4 -->
                         <div class="bg-dark-lighter rounded-2xl p-6 border border-slate-800 hover:border-brand-500/30 transition-all group shadow-sm">
@@ -432,7 +453,7 @@
                                 <span class="text-emerald-400 text-xs font-bold bg-emerald-400/10 px-2 py-1 rounded-lg">High</span>
                             </div>
                             <h3 class="text-slate-400 text-sm font-medium">Client Rating</h3>
-                            <p class="text-2xl font-bold text-white mt-1">4.9/5</p>
+                            <p class="text-2xl font-bold text-white mt-1"><span id="stat-rating">–</span>/5</p>
                         </div>
                     </div>
 
@@ -617,7 +638,41 @@
                         </div>
                     </div>
                 </section>
-
+                
+                <!-- Reviews Section -->
+                <section id="reviews-section" class="tab-content hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="bg-dark-lighter rounded-2xl border border-slate-800 p-6 shadow-sm">
+                            <h3 class="text-lg font-bold text-white mb-4">Overall Satisfaction</h3>
+                            <p class="text-sm text-slate-400 mb-6">Ratings collected from your submitted tickets.</p>
+                            <div class="space-y-3">
+                                <div>
+                                    <p class="text-xs text-slate-500 mb-1">Average rating</p>
+                                    <p class="text-3xl font-bold text-white"><span id="reviews-average">–</span>/5</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-500 mb-1">Total reviews</p>
+                                    <p class="text-lg font-bold text-white" id="reviews-count">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-2 bg-dark-lighter rounded-2xl border border-slate-800 p-6 shadow-sm">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="text-lg font-bold text-white">Per-ticket feedback</h3>
+                                    <p class="text-xs text-slate-500 mt-1">Update ratings for previous tickets at any time.</p>
+                                </div>
+                                <button type="button" class="px-3 py-1.5 rounded-lg border border-slate-700 text-[11px] font-medium text-slate-400 hover:text-white hover:border-slate-500 transition-all" onclick="fetchTickets()">
+                                    Refresh
+                                </button>
+                            </div>
+                            <div id="reviews-list" class="space-y-3 max-h-[420px] overflow-y-auto pr-1">
+                                <p class="text-sm text-slate-500">No tickets yet. Submit a ticket to start collecting feedback.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
                 <!-- Settings Section -->
                 <section id="settings-section" class="tab-content hidden">
                     <div class="max-w-4xl mx-auto space-y-8">
@@ -853,6 +908,27 @@
                 </div>
             </footer>
         </main>
+    </div>
+
+    <!-- Review Modal -->
+    <div id="review-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[190] hidden">
+        <div class="bg-dark-lighter border border-slate-800 rounded-2xl p-6 w-full max-w-sm">
+            <h3 class="text-lg font-bold text-white mb-2">Rate this ticket</h3>
+            <p class="text-sm text-slate-400 mb-4">How satisfied are you with how your request was handled?</p>
+            <div class="flex items-center justify-between mb-4">
+                <button type="button" class="w-10 h-10 rounded-full bg-slate-800 text-slate-300 hover:bg-rose-600 hover:text-white transition-all" onclick="handleReview(1)">1</button>
+                <button type="button" class="w-10 h-10 rounded-full bg-slate-800 text-slate-300 hover:bg-rose-400 hover:text-white transition-all" onclick="handleReview(2)">2</button>
+                <button type="button" class="w-10 h-10 rounded-full bg-slate-800 text-slate-300 hover:bg-amber-400 hover:text-white transition-all" onclick="handleReview(3)">3</button>
+                <button type="button" class="w-10 h-10 rounded-full bg-slate-800 text-slate-300 hover:bg-emerald-400 hover:text-white transition-all" onclick="handleReview(4)">4</button>
+                <button type="button" class="w-10 h-10 rounded-full bg-slate-800 text-slate-300 hover:bg-emerald-500 hover:text-white transition-all" onclick="handleReview(5)">5</button>
+            </div>
+            <div class="flex items-center justify-between text-[11px] text-slate-500 mb-4">
+                <span>1 = Very poor, 5 = Excellent</span>
+            </div>
+            <div class="flex justify-end gap-3">
+                <button type="button" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-all" onclick="closeReviewModal()">Skip</button>
+            </div>
+        </div>
     </div>
 
     <!-- Notification Toast -->
