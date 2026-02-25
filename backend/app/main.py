@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
 from typing import Optional, Dict, Any, List
 from datetime import datetime
-from .database import engine, get_db, Base, run_migrations
+from .database import engine, get_db, Base
 from .models import Ticket, User
 from .ml.inference import TicketClassifier
 from .auth import verify_password, get_password_hash, create_access_token, ALGORITHM, SECRET_KEY
@@ -18,12 +18,6 @@ from pathlib import Path
 # Get the base directory (where .env is located)
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
-
-# Run migrations to ensure columns exist
-try:
-    run_migrations()
-except Exception as e:
-    print(f"Migration error: {e}")
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -56,7 +50,6 @@ class UserOut(BaseModel):
     id: int
     email: EmailStr
     full_name: str
-    is_admin: Optional[int] = 0
     class Config:
         orm_mode = True
 
@@ -126,15 +119,10 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
-    is_admin = 0
-    if user.email == "admin@gmail.com":
-        is_admin = 1
-        
     new_user = User(
         email=user.email,
         hashed_password=get_password_hash(user.password),
-        full_name=user.full_name,
-        is_admin=is_admin
+        full_name=user.full_name
     )
     db.add(new_user)
     db.commit()
@@ -189,17 +177,8 @@ def create_ticket(ticket: TicketCreate, db: Session = Depends(get_db), current_u
 
 @app.get("/tickets", response_model=List[TicketOut])
 def get_tickets(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    if current_user.is_admin:
-        tickets = db.query(Ticket).order_by(Ticket.id.desc()).offset(skip).limit(limit).all()
-    else:
-        tickets = db.query(Ticket).filter(Ticket.owner_id == current_user.id).order_by(Ticket.id.desc()).offset(skip).limit(limit).all()
+    tickets = db.query(Ticket).filter(Ticket.owner_id == current_user.id).order_by(Ticket.id.desc()).offset(skip).limit(limit).all()
     return tickets
-
-@app.get("/admin/users", response_model=List[UserOut])
-def get_all_users(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    if not current_user.is_admin:
-        raise HTTPException(status_code=403, detail="Not authorized")
-    return db.query(User).all()
 
 
 @app.post("/tickets/{ticket_id}/review", response_model=TicketOut)

@@ -10,7 +10,6 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
     full_name = Column(String)
-    is_admin = Column(Integer, default=0) # 0 = user, 1 = admin
     
     tickets = relationship("Ticket", back_populates="owner")
 

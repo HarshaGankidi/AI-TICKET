@@ -76,20 +76,10 @@ async function checkAuth() {
         });
 
         if (response.ok) {
-        currentUser = await response.json();
-        updateUIWithUser();
-        
-        // Show/Hide admin navigation
-        const adminNav = document.getElementById('admin-nav');
-        if (adminNav) {
-            if (currentUser.is_admin) {
-                adminNav.classList.remove('hidden');
-            } else {
-                adminNav.classList.add('hidden');
-            }
-        }
+            currentUser = await response.json();
+            updateUIWithUser();
 
-        const authModal = document.getElementById('auth-modal');
+            const authModal = document.getElementById('auth-modal');
             if (authModal) authModal.classList.add('hidden');
             authScreen.classList.add('hidden');
             mainApp.classList.remove('opacity-0');
@@ -135,16 +125,6 @@ async function handleLogin(e) {
         localStorage.setItem('token', data.access_token);
         currentUser = data.user;
         updateUIWithUser();
-
-        // Show/Hide admin navigation
-        const adminNav = document.getElementById('admin-nav');
-        if (adminNav) {
-            if (currentUser.is_admin) {
-                adminNav.classList.remove('hidden');
-            } else {
-                adminNav.classList.add('hidden');
-            }
-        }
 
         const authScreen = document.getElementById('auth-screen');
         const mainApp = document.getElementById('main-app');
@@ -299,8 +279,7 @@ function switchTab(tab) {
         settings: { t: "Profile Settings", s: "Manage your account and notification preferences." },
         about: { t: "About", s: "Learn about the platform and its capabilities." },
         help: { t: "Help Center", s: "Browse FAQs and find quick answers." },
-        contact: { t: "Contact", s: "Share your details and we will reach out." },
-        'admin-users': { t: "User Management", s: "View and manage all system users." }
+        contact: { t: "Contact", s: "Share your details and we will reach out." }
     };
 
     document.getElementById('page-title').textContent = titles[tab].t;
@@ -308,10 +287,6 @@ function switchTab(tab) {
 
     if (tab === 'history' || tab === 'reviews') {
         fetchTickets();
-    }
-    
-    if (tab === 'admin-users') {
-        fetchAdminUsers();
     }
 }
 
@@ -728,40 +703,4 @@ function getPriorityColor(prio) {
     if (prio === 'high') return 'text-rose-400';
     if (prio === 'medium') return 'text-amber-400';
     return 'text-emerald-400';
-}
-
-async function fetchAdminUsers() {
-    const list = document.getElementById('admin-users-list');
-    if (!list) return;
-
-    try {
-        const response = await fetch(`${API_URL}/admin/users`, {
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-        });
-
-        if (!response.ok) throw new Error('Failed to fetch users');
-
-        const users = await response.json();
-        list.innerHTML = users.map(u => `
-            <tr class="hover:bg-slate-800/30 transition-all">
-                <td class="px-6 py-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 text-xs font-bold">
-                            ${u.full_name[0].toUpperCase()}
-                        </div>
-                        <span class="text-sm font-medium text-white">${u.full_name}</span>
-                    </div>
-                </td>
-                <td class="px-6 py-4 text-sm text-slate-400">${u.email}</td>
-                <td class="px-6 py-4">
-                    <span class="px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${u.is_admin ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'bg-slate-800 text-slate-500 border border-slate-700'}">
-                        ${u.is_admin ? 'Admin' : 'User'}
-                    </span>
-                </td>
-                <td class="px-6 py-4 text-sm text-slate-500 font-mono">#${u.id}</td>
-            </tr>
-        `).join('');
-    } catch (error) {
-        showNotification("Admin Error", error.message, "error");
-    }
 }
