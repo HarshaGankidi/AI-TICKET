@@ -8,18 +8,10 @@ let pendingReviewTicketId = null;
 
 // On Load
 document.addEventListener('DOMContentLoaded', () => {
-    pingServer(); // Wake up backend immediately
     checkAuth();
     checkSystemStatus();
     // Default tab will be set after auth
 });
-
-async function pingServer() {
-    try {
-        // Just a light ping to wake up the server (especially for Render cold starts)
-        fetch(`${API_URL}/`).catch(() => {});
-    } catch (e) {}
-}
 
 function openAuthModal(type = 'login') {
     const modal = document.getElementById('auth-modal');
@@ -101,12 +93,8 @@ async function checkAuth() {
             document.body.classList.remove('no-scroll');
             document.documentElement.classList.remove('no-scroll');
             switchTab('home');
-            
-            // Parallelize background data loading
-            Promise.all([
-                fetchTickets(),
-                updateDashboardStats()
-            ]);
+            fetchTickets();
+            updateDashboardStats();
         } else {
             localStorage.removeItem('token');
             authScreen.classList.remove('hidden');
@@ -162,20 +150,11 @@ async function handleLogin(e) {
         document.body.classList.remove('no-scroll');
         document.documentElement.classList.remove('no-scroll');
         switchTab('home');
-        
-        // Parallelize these to speed up login
-        Promise.all([
-            fetchTickets(),
-            updateDashboardStats()
-        ]);
-        
+        fetchTickets();
+        updateDashboardStats();
         showNotification("Welcome Back!", "Successfully signed into your workspace.");
     } catch (error) {
-        let msg = error.message;
-        if (msg.includes('fetch')) {
-            msg = "Connection failed. The server might be waking up, please try again in a few seconds.";
-        }
-        showNotification("Login Failed", msg, "error");
+        showNotification("Login Failed", error.message, "error");
     } finally {
         btn.disabled = false;
         btn.textContent = 'Access Workspace';
@@ -229,20 +208,11 @@ async function handleSignup(e) {
         document.body.classList.remove('no-scroll');
         document.documentElement.classList.remove('no-scroll');
         switchTab('home');
-        
-        // Parallelize background data loading
-        Promise.all([
-            fetchTickets(),
-            updateDashboardStats()
-        ]);
-        
+        fetchTickets();
+        updateDashboardStats();
         showNotification("Account Created", "You are now signed into your workspace.");
     } catch (error) {
-        let msg = error.message;
-        if (msg.includes('fetch')) {
-            msg = "Connection failed. The server might be waking up, please try again in a few seconds.";
-        }
-        showNotification("Signup Failed", msg, "error");
+        showNotification("Signup Failed", error.message, "error");
     } finally {
         btn.disabled = false;
         btn.textContent = 'Register Account';
