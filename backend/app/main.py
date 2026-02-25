@@ -27,15 +27,7 @@ app = FastAPI(title="Customer Support Hub", description="Advanced Support Ticket
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://ai-ticket-npbx.onrender.com",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:8000",
-        "http://localhost:8001"
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
@@ -82,8 +74,6 @@ class TicketCreate(BaseModel):
     category: str
     priority: str
     extracted_entities: Optional[Dict[str, Any]] = {}
-    rating: Optional[int] = None
-    first_response_seconds: Optional[int] = None
 
 class TicketOut(TicketCreate):
     id: int
@@ -93,9 +83,6 @@ class TicketOut(TicketCreate):
     class Config:
         from_attributes = True
 
-
-class ReviewIn(BaseModel):
-    rating: int
 
 # Helper to get current user
 async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
@@ -189,24 +176,6 @@ def get_tickets(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), 
     return tickets
 
 
-@app.post("/tickets/{ticket_id}/review", response_model=TicketOut)
-def review_ticket(ticket_id: int, review: ReviewIn, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    if review.rating < 1 or review.rating > 5:
-        raise HTTPException(status_code=400, detail="Rating must be between 1 and 5")
-
-    ticket = db.query(Ticket).filter(Ticket.id == ticket_id, Ticket.owner_id == current_user.id).first()
-    if not ticket:
-        raise HTTPException(status_code=404, detail="Ticket not found")
-
-    ticket.rating = review.rating
-    if ticket.first_response_seconds is None and ticket.created_at is not None:
-        # Approximate first response time as time between creation and first rating
-        delta = datetime.utcnow() - ticket.created_at.replace(tzinfo=None)
-        ticket.first_response_seconds = int(delta.total_seconds())
-
-    db.commit()
-    db.refresh(ticket)
-    return ticket
-
 if __name__ == "__main__":
     uvicorn.run("backend.app.main:app", host="0.0.0.0", port=8000, reload=True)
+

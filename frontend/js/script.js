@@ -275,7 +275,6 @@ function switchTab(tab) {
         dashboard: { t: "Workspace Overview", s: "Monitor your ticket performance and platform health." },
         create: { t: "New Support Request", s: "Submit a new ticket for processing and resolution." },
         history: { t: "Request History", s: "View and manage your previous support requests." },
-        reviews: { t: "Reviews", s: "Track satisfaction scores across your tickets." },
         settings: { t: "Profile Settings", s: "Manage your account and notification preferences." },
         about: { t: "About", s: "Learn about the platform and its capabilities." },
         help: { t: "Help Center", s: "Browse FAQs and find quick answers." },
@@ -285,7 +284,7 @@ function switchTab(tab) {
     document.getElementById('page-title').textContent = titles[tab].t;
     document.getElementById('page-subtitle').textContent = titles[tab].s;
 
-    if (tab === 'history' || tab === 'reviews') {
+    if (tab === 'history') {
         fetchTickets();
     }
 }
@@ -437,10 +436,8 @@ async function submitTicket() {
         }
 
         const created = await response.json();
-        pendingReviewTicketId = created.id;
         showNotification("Success!", "Your ticket has been officially submitted.");
         resetForm();
-        openReviewModal();
         setTimeout(() => switchTab('history'), 800);
     } catch (error) {
         showNotification("Submission Error", error.message, "error");
@@ -463,7 +460,6 @@ async function fetchTickets() {
         allTickets = await response.json();
         renderTickets(allTickets);
         updateDashboardStats();
-        renderReviews();
     } catch (error) {
         showNotification("Failed to Load", "Could not retrieve ticket history.", "error");
     }
@@ -481,143 +477,10 @@ function updateDashboardStats() {
         previewTicketsEl.textContent = total;
     }
 
-    const rated = allTickets.filter(t => typeof t.rating === 'number' && !Number.isNaN(t.rating));
-    const reviewsCount = rated.length;
-    let avgRating = null;
-    if (reviewsCount > 0) {
-        avgRating = rated.reduce((sum, t) => sum + t.rating, 0) / reviewsCount;
-    }
-
-    const ratingLabel = avgRating !== null ? avgRating.toFixed(1) : '–';
-    const ratingEl = document.getElementById('stat-rating');
-    if (ratingEl) {
-        ratingEl.textContent = ratingLabel;
-    }
-    const previewRatingEl = document.getElementById('preview-rating');
-    if (previewRatingEl) {
-        previewRatingEl.textContent = ratingLabel;
-    }
-
-    const times = allTickets
-        .map(t => t.first_response_seconds)
-        .filter(v => typeof v === 'number' && !Number.isNaN(v) && v >= 0)
-        .sort((a, b) => a - b);
-
-    let medianLabel = '–';
-    if (times.length > 0) {
-        const mid = Math.floor((times.length - 1) / 2);
-        const medianSeconds = times[mid];
-        const minutes = medianSeconds / 60;
-        if (minutes < 1) {
-            medianLabel = '<1m';
-        } else if (minutes < 60) {
-            medianLabel = `${Math.round(minutes)}m`;
-        } else {
-            const hours = minutes / 60;
-            medianLabel = `${hours.toFixed(1)}h`;
-        }
-    }
-
-    const responseEl = document.getElementById('stat-response');
-    if (responseEl) {
-        responseEl.textContent = medianLabel;
-    }
-    const previewResponseEl = document.getElementById('preview-response');
-    if (previewResponseEl) {
-        previewResponseEl.textContent = medianLabel;
-    }
-
     const autoEl = document.getElementById('stat-auto');
     if (autoEl) {
-        const percentage = total > 0 ? Math.round((reviewsCount / total) * 100) : 0;
-        autoEl.textContent = `${percentage}%`;
+        autoEl.textContent = "100%";
     }
-}
-
-function openReviewModal() {
-    const modal = document.getElementById('review-modal');
-    if (!modal) return;
-    modal.classList.remove('hidden');
-}
-
-function closeReviewModal() {
-    const modal = document.getElementById('review-modal');
-    if (!modal) return;
-    modal.classList.add('hidden');
-    pendingReviewTicketId = null;
-}
-
-async function handleReview(rating) {
-    if (!pendingReviewTicketId) {
-        closeReviewModal();
-        return;
-    }
-
-    try {
-        const response = await fetch(`${API_URL}/tickets/${pendingReviewTicketId}/review`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
-            body: JSON.stringify({ rating })
-        });
-
-        if (!response.ok) {
-            throw new Error('Could not save review');
-        }
-
-        showNotification("Thank you!", "Your rating has been recorded.");
-        closeReviewModal();
-        fetchTickets();
-    } catch (error) {
-        showNotification("Review Error", error.message, "error");
-        closeReviewModal();
-    }
-}
-
-function renderReviews() {
-    const container = document.getElementById('reviews-list');
-    const avgEl = document.getElementById('reviews-average');
-    const countEl = document.getElementById('reviews-count');
-    if (!container || !avgEl || !countEl) return;
-
-    const rated = allTickets.filter(t => typeof t.rating === 'number' && !Number.isNaN(t.rating));
-
-    if (rated.length === 0) {
-        container.innerHTML = '<p class="text-sm text-slate-500">No reviews yet. Submit a ticket and rate it after creation.</p>';
-        avgEl.textContent = '–';
-        countEl.textContent = '0';
-        return;
-    }
-
-    const avg = rated.reduce((sum, t) => sum + t.rating, 0) / rated.length;
-    avgEl.textContent = avg.toFixed(1);
-    countEl.textContent = rated.length.toString();
-
-    container.innerHTML = rated.map(t => {
-        const filled = '★'.repeat(t.rating);
-        const empty = '☆'.repeat(5 - t.rating);
-        return `
-            <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-                <div>
-                    <p class="text-sm font-medium text-white truncate max-w-xs">${t.title}</p>
-                    <p class="text-[11px] text-slate-500">Ticket #${t.id.toString().padStart(4, '0')}</p>
-                </div>
-                <div class="flex items-center gap-3">
-                    <span class="text-sm text-amber-400 font-semibold">${filled}${empty}</span>
-                    <button type="button" class="px-2 py-1 rounded-lg text-[11px] font-medium bg-slate-800 text-slate-300 hover:bg-slate-700" onclick="reopenReview(${t.id})">
-                        Update
-                    </button>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-function reopenReview(ticketId) {
-    pendingReviewTicketId = ticketId;
-    openReviewModal();
 }
 
 function renderTickets(tickets) {
@@ -703,4 +566,40 @@ function getPriorityColor(prio) {
     if (prio === 'high') return 'text-rose-400';
     if (prio === 'medium') return 'text-amber-400';
     return 'text-emerald-400';
+}
+
+async function fetchAdminUsers() {
+    const list = document.getElementById('admin-users-list');
+    if (!list) return;
+
+    try {
+        const response = await fetch(`${API_URL}/admin/users`, {
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch users');
+
+        const users = await response.json();
+        list.innerHTML = users.map(u => `
+            <tr class="hover:bg-slate-800/30 transition-all">
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 text-xs font-bold">
+                            ${u.full_name[0].toUpperCase()}
+                        </div>
+                        <span class="text-sm font-medium text-white">${u.full_name}</span>
+                    </div>
+                </td>
+                <td class="px-6 py-4 text-sm text-slate-400">${u.email}</td>
+                <td class="px-6 py-4">
+                    <span class="px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${u.is_admin ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'bg-slate-800 text-slate-500 border border-slate-700'}">
+                        ${u.is_admin ? 'Admin' : 'User'}
+                    </span>
+                </td>
+                <td class="px-6 py-4 text-sm text-slate-500 font-mono">#${u.id}</td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        showNotification("Admin Error", error.message, "error");
+    }
 }
