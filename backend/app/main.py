@@ -116,7 +116,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         raise credentials_exception
     return user
 
-@app.get("/", methods=["GET", "HEAD"])
+@app.api_route("/", methods=["GET", "HEAD"])
 def read_root():
     return {"status": "online", "message": "Support Hub API is running"}
 
