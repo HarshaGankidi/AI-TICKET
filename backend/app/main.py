@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
 from typing import Optional, Dict, Any, List
 from datetime import datetime
-from .database import engine, get_db, Base
+from .database import engine, get_db, Base, run_migrations
 from .models import Ticket, User
 from .ml.inference import TicketClassifier
 from .auth import verify_password, get_password_hash, create_access_token, ALGORITHM, SECRET_KEY
@@ -18,6 +18,12 @@ from pathlib import Path
 # Get the base directory (where .env is located)
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
+
+# Run migrations to ensure columns exist
+try:
+    run_migrations()
+except Exception as e:
+    print(f"Migration error: {e}")
 
 # Create tables
 Base.metadata.create_all(bind=engine)
