@@ -57,6 +57,7 @@ class UserOut(BaseModel):
     id: int
     email: EmailStr
     full_name: str
+    is_admin: int
     class Config:
         orm_mode = True
 
@@ -126,10 +127,15 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
+    is_admin = 0
+    if user.email == "admin@gmail.com":
+        is_admin = 1
+        
     new_user = User(
         email=user.email,
         hashed_password=get_password_hash(user.password),
-        full_name=user.full_name
+        full_name=user.full_name,
+        is_admin=is_admin
     )
     db.add(new_user)
     db.commit()
@@ -184,8 +190,17 @@ def create_ticket(ticket: TicketCreate, db: Session = Depends(get_db), current_u
 
 @app.get("/tickets", response_model=List[TicketOut])
 def get_tickets(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    tickets = db.query(Ticket).filter(Ticket.owner_id == current_user.id).order_by(Ticket.id.desc()).offset(skip).limit(limit).all()
+    if current_user.is_admin:
+        tickets = db.query(Ticket).order_by(Ticket.id.desc()).offset(skip).limit(limit).all()
+    else:
+        tickets = db.query(Ticket).filter(Ticket.owner_id == current_user.id).order_by(Ticket.id.desc()).offset(skip).limit(limit).all()
     return tickets
+
+@app.get("/admin/users", response_model=List[UserOut])
+def get_all_users(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    return db.query(User).all()
 
 
 @app.post("/tickets/{ticket_id}/review", response_model=TicketOut)
