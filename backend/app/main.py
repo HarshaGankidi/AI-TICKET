@@ -27,15 +27,7 @@ app = FastAPI(title="Customer Support Hub", description="Advanced Support Ticket
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://ai-ticket-npbx.onrender.com",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:8000",
-        "http://localhost:8001"
-    ],
+    allow_origin_regex="https?://.*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -57,7 +49,7 @@ class UserOut(BaseModel):
     id: int
     email: EmailStr
     full_name: str
-    is_admin: int
+    is_admin: Optional[int] = 0
     class Config:
         orm_mode = True
 
