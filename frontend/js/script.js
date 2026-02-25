@@ -8,6 +8,9 @@ let pendingReviewTicketId = null;
 
 // On Load
 document.addEventListener('DOMContentLoaded', () => {
+    // Ping the root endpoint to wake up the server (especially for Render cold starts)
+    fetch(`${API_URL}/`).catch(err => console.log("Wake up ping sent"));
+    
     checkAuth();
     checkSystemStatus();
     // Default tab will be set after auth
@@ -154,7 +157,12 @@ async function handleLogin(e) {
         updateDashboardStats();
         showNotification("Welcome Back!", "Successfully signed into your workspace.");
     } catch (error) {
-        showNotification("Login Failed", error.message, "error");
+        console.error('Login failed:', error);
+        let errorMsg = error.message;
+        if (errorMsg === "Failed to fetch") {
+            errorMsg = "Unable to connect to server. It may be starting up, please try again in 10-20 seconds.";
+        }
+        showNotification("Login Failed", errorMsg, "error");
     } finally {
         btn.disabled = false;
         btn.textContent = 'Access Workspace';
@@ -212,7 +220,12 @@ async function handleSignup(e) {
         updateDashboardStats();
         showNotification("Account Created", "You are now signed into your workspace.");
     } catch (error) {
-        showNotification("Signup Failed", error.message, "error");
+        console.error('Signup failed:', error);
+        let errorMsg = error.message;
+        if (errorMsg === "Failed to fetch") {
+            errorMsg = "Unable to connect to server. It may be starting up, please try again in 10-20 seconds.";
+        }
+        showNotification("Signup Failed", errorMsg, "error");
     } finally {
         btn.disabled = false;
         btn.textContent = 'Register Account';
