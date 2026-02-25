@@ -51,7 +51,7 @@ class UserOut(BaseModel):
     email: EmailStr
     full_name: str
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class Token(BaseModel):
     access_token: str
@@ -83,7 +83,7 @@ class TicketOut(TicketCreate):
     owner_id: int
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ReviewIn(BaseModel):
@@ -108,7 +108,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         raise credentials_exception
     return user
 
-@app.get("/")
+@app.get("/", methods=["GET", "HEAD"])
 def read_root():
     return {"status": "online", "message": "Support Hub API is running"}
 
